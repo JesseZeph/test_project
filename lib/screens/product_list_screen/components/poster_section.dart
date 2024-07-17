@@ -4,7 +4,7 @@ import 'package:interview_test/core/data/data_provider.dart';
 import 'package:interview_test/utility/app_data.dart';
 
 class PosterSection extends ConsumerWidget {
-  const PosterSection({Key? key}) : super(key: key);
+  const PosterSection({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -69,7 +69,7 @@ class PosterSection extends ConsumerWidget {
                         ImageChunkEvent? loadingProgress) {
                       if (loadingProgress == null) return child;
                       return Center(
-                        child: CircularProgressIndicator(
+                        child: CircularProgressIndicator.adaptive(
                           value: loadingProgress.expectedTotalBytes != null
                               ? loadingProgress.cumulativeBytesLoaded /
                                   loadingProgress.expectedTotalBytes!

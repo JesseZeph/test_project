@@ -274,8 +274,7 @@ class CartNotifier extends StateNotifier<CartState> {
     );
   }
 
-  Future<void> stripePayment(
-      {required Future<void> Function() operation}) async {
+  Future<void> stripePayment({required Function() operation}) async {
     try {
       Map<String, dynamic> paymentData = {
         "email": _userNotifier.getLoginUser()?.name,
@@ -287,45 +286,47 @@ class CartNotifier extends StateNotifier<CartState> {
           "postal_code": state.postalCodeController.text,
           "country": "US"
         },
-        "amount": getGrandTotal() * 100,
+        "amount": (getGrandTotal() * 100).toInt(),
         "currency": "usd",
         "description": "Your transaction description here"
       };
-      Response response = await service.addItem(
+
+      final response = await service.addItem(
           endpointUrl: 'payment/stripe', itemData: paymentData);
-      final data = await response.body;
+      final data = response.body;
       final paymentIntent = data['paymentIntent'];
       final ephemeralKey = data['ephemeralKey'];
       final customer = data['customer'];
       final publishableKey = data['publishableKey'];
 
       Stripe.publishableKey = publishableKey;
-      BillingDetails billingDetails = BillingDetails(
+
+      final billingDetails = BillingDetails(
         email: _userNotifier.getLoginUser()?.name,
         phone: '91234123908',
         name: _userNotifier.getLoginUser()?.name,
         address: Address(
-            country: 'US',
-            city: state.cityController.text,
-            line1: state.streetController.text,
-            line2: state.stateController.text,
-            postalCode: state.postalCodeController.text,
-            state: state.stateController.text),
+          country: 'US',
+          city: state.cityController.text,
+          line1: state.streetController.text,
+          line2: state.stateController.text,
+          postalCode: state.postalCodeController.text,
+          state: state.stateController.text,
+        ),
       );
+
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
-          customFlow: false,
-          merchantDisplayName: 'FUSIONSTORE',
           paymentIntentClientSecret: paymentIntent,
           customerEphemeralKeySecret: ephemeralKey,
           customerId: customer,
-          style: ThemeMode.light,
+          merchantDisplayName: 'FUSIONSTORE',
           billingDetails: billingDetails,
         ),
       );
 
-      await Stripe.instance.presentPaymentSheet().then((value) async {
-        log('payment success');
+      await Stripe.instance.presentPaymentSheet().then((_) async {
+        log('Payment success');
         ScaffoldMessenger.of(Get.context!).showSnackBar(
           const SnackBar(content: Text('Payment Success')),
         );
@@ -333,18 +334,20 @@ class CartNotifier extends StateNotifier<CartState> {
       }).onError((error, stackTrace) {
         if (error is StripeException) {
           ScaffoldMessenger.of(Get.context!).showSnackBar(
-            SnackBar(content: Text('New ${error.error.localizedMessage}')),
+            SnackBar(
+                content: Text('Stripe Error: ${error.error.localizedMessage}')),
           );
         } else {
           ScaffoldMessenger.of(Get.context!).showSnackBar(
-            SnackBar(content: Text('Stripe Error: $error')),
+            SnackBar(content: Text('Error: $error')),
           );
         }
       });
     } catch (e) {
       ScaffoldMessenger.of(Get.context!).showSnackBar(
-        SnackBar(content: Text(e.toString())),
+        SnackBar(content: Text('An error occurred: $e')),
       );
+      log('Stripe Payment Error: $e');
     }
   }
 

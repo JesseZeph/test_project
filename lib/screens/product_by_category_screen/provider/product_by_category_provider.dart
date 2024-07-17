@@ -34,10 +34,10 @@ class ProductByCategoryState {
     return ProductByCategoryState(
       selectedCategory: selectedCategory ?? this.selectedCategory,
       selectedSubCategory: selectedSubCategory ?? this.selectedSubCategory,
-      subCategories: subCategories ?? this.subCategories,
-      brands: brands ?? this.brands,
-      selectedBrands: selectedBrands ?? this.selectedBrands,
-      filteredProducts: filteredProducts ?? this.filteredProducts,
+      subCategories: subCategories ?? List.from(this.subCategories),
+      brands: brands ?? List.from(this.brands),
+      selectedBrands: selectedBrands ?? List.from(this.selectedBrands),
+      filteredProducts: filteredProducts ?? List.from(this.filteredProducts),
     );
   }
 }
@@ -129,14 +129,8 @@ class ProductByCategoryNotifier extends StateNotifier<ProductByCategoryState> {
     state = state.copyWith(filteredProducts: sortedProducts);
   }
 
-  void toggleBrandSelection(Brand brand) {
-    final updatedSelectedBrands = List<Brand>.from(state.selectedBrands);
-    if (updatedSelectedBrands.contains(brand)) {
-      updatedSelectedBrands.remove(brand);
-    } else {
-      updatedSelectedBrands.add(brand);
-    }
-    state = state.copyWith(selectedBrands: updatedSelectedBrands);
+  void updateSelectedBrands(List<Brand> brands) {
+    state = state.copyWith(selectedBrands: brands);
     filterProductByBrand();
   }
 }

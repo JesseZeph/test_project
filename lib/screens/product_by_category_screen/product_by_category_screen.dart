@@ -63,8 +63,8 @@ class _ProductByCategoryScreenState
                         child: Column(
                           children: [
                             Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 10.0),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 15),
                               child: HorizontalList(
                                 items: proByCatProvider.subCategories,
                                 itemToString: (SubCategory? val) =>
@@ -80,47 +80,55 @@ class _ProductByCategoryScreenState
                                 },
                               ),
                             ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: CustomDropdown<String>(
-                                    hintText: 'Sort By Price',
-                                    items: const ['Low To High', 'High To Low'],
-                                    onChanged: (val) {
-                                      if (val?.toLowerCase() == 'low to high') {
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: CustomDropdown<String>(
+                                      hintText: 'Sort By Price',
+                                      items: const [
+                                        'Low To High',
+                                        'High To Low'
+                                      ],
+                                      onChanged: (val) {
+                                        if (val?.toLowerCase() ==
+                                            'low to high') {
+                                          ref
+                                              .read(
+                                                  productbyCategoryNotifierProvider
+                                                      .notifier)
+                                              .sortProducts(ascending: true);
+                                        } else {
+                                          ref
+                                              .read(
+                                                  productbyCategoryNotifierProvider
+                                                      .notifier)
+                                              .sortProducts(ascending: false);
+                                        }
+                                      },
+                                      displayItem: (val) => val,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: MultiSelectDropDown<Brand>(
+                                      hintText: 'Filter By Brands',
+                                      items: proByCatProvider.brands,
+                                      onSelectionChanged: (List<Brand> val) {
                                         ref
                                             .read(
                                                 productbyCategoryNotifierProvider
                                                     .notifier)
-                                            .sortProducts(ascending: true);
-                                      } else {
-                                        ref
-                                            .read(
-                                                productbyCategoryNotifierProvider
-                                                    .notifier)
-                                            .sortProducts(ascending: false);
-                                      }
-                                    },
-                                    displayItem: (val) => val,
+                                            .updateSelectedBrands(val);
+                                      },
+                                      displayItem: (val) => val.name ?? '',
+                                      selectedItems:
+                                          proByCatProvider.selectedBrands,
+                                    ),
                                   ),
-                                ),
-                                Expanded(
-                                  child: MultiSelectDropDown<Brand>(
-                                    hintText: 'Filter By Brands',
-                                    items: proByCatProvider.brands,
-                                    onSelectionChanged: (val) {
-                                      ref
-                                          .read(
-                                              productbyCategoryNotifierProvider
-                                                  .notifier)
-                                          .filterProductByBrand();
-                                    },
-                                    displayItem: (val) => val.name ?? '',
-                                    selectedItems:
-                                        proByCatProvider.selectedBrands,
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),
