@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:interview_test/screens/home.dart';
 import '../../utility/app_color.dart';
-import 'provider/user_provider.dart'; // Make sure this import points to your new Riverpod user provider
+import 'provider/user_provider.dart';
 
 class LoginScreen extends ConsumerWidget {
   const LoginScreen({Key? key}) : super(key: key);
